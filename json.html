@@ -107,40 +107,21 @@
     <title>Barret's Countdown</title>
   </head>
   <body>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            text-align: center;
-            background-color: powderblue;
-            color: black;
-        }
-    </style>
-    <h1 id="datetime"></h1>
-
-    <h1 id="type"></h1>
-    <h1 id="left"></h1>
+    <p id="json"></p>
 
     <script>
-      function updateDateTime() {
-        const now = new Date();
-        const currentDateTime = now.toLocaleString();
-        document.querySelector('#datetime').textContent = currentDateTime;
-        
-      }
       function updateDaysLeft(specialDays) {
         const startDate = new Date("2024-07-27");
         const endDate = new Date("2025-04-23");
         const now = new Date();
         var daysLeft = getDaysLeft(now, startDate, endDate, specialDays);
         var todayType = getTodayType(now, startDate, endDate, specialDays);
-        document.querySelector('#left').textContent = daysLeft + ' days';
-        document.querySelector('#type').textContent = todayType;
+        var json = JSON.stringify({daysLeft: daysLeft, todayType: todayType});
+        document.querySelector('#json').textContent = json;
       }
       
       var specialDays = specialDays();
-      setInterval(updateDateTime, 1000);
-      setInterval(updateDaysLeft, 1000, specialDays);
+      updateDaysLeft(specialDays);
     </script>
   </body>
 </html>
