@@ -1,0 +1,144 @@
+<script>
+    function getServerTime() {
+        const url = "http://worldtimeapi.org/api/timezone/America/New_York";
+        fetch(url)
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error ${response.status}`);
+                }
+                return response.json();
+            })
+            .then((data) => {
+                var day_of_week = data.day_of_week;
+                var datetime = data.datetime;
+                return datetime;
+                
+            })
+            .catch((error) => {
+                // ...handle/report error...
+            });
+    }
+     
+    function specialDays() {
+        const specialDays = [
+            { date: "2024-09-02", name: "Labor Day" },
+            { date: "2024-11-25", name: "Thanksgiving Break"},
+            { date: "2024-11-26", name: "Thanksgiving Break" },
+            { date: "2024-11-27", name: "Thanksgiving Break" },
+            { date: "2024-11-28", name: "Thanksgiving" },
+            { date: "2024-11-29", name: "Thanksgiving Break" },
+            { date: "2024-12-23", name: "Christmas Break" },
+            { date: "2024-12-24", name: "Christmas Break" },
+            { date: "2024-12-25", name: "Christmas" },
+            { date: "2024-12-26", name: "Christmas Break" },
+            { date: "2024-12-27", name: "Christmas Break" },
+            { date: "2024-12-30", name: "Christmas Break" },
+            { date: "2024-12-31", name: "Christmas Break" },
+            { date: "2025-01-01", name: "New Year's Day" },
+            { date: "2025-01-02", name: "Staff Work Day"},
+            { date: "2025-01-03", name: "Staff Work Day"},
+            { date: "2025-01-20", name: "MLK Day" },
+            { date: "2025-02-17", name: "Presidents Day" },
+            { date: "2025-03-17", name: "Spring Break"},
+            { date: "2025-03-18", name: "Spring Break" },
+            { date: "2025-03-19", name: "Spring Break" },
+            { date: "2025-03-20", name: "Spring Break" },
+            { date: "2025-03-21", name: "Spring Break" },
+            { date: "2025-04-18", name: "Good Friday" }
+        ];
+        return specialDays;
+    }
+
+    function getDaysLeft(todayDate, startDate, endDate, specialDays) {
+        if (startDate > todayDate) {
+            todayDate = startDate
+        }
+        let timeDiff =
+            endDate.getTime() - todayDate.getTime();
+        let daysDiff = Math.round(timeDiff / (1000 * 3600 * 24));
+        weekDiff = Math.floor(daysDiff / 7);
+        remainder = daysDiff % 7; 
+        if (remainder >= 5) {
+            remainder = 5
+        }
+        schoolDaysDiff = weekDiff * 5 + remainder;
+        
+        for (let i = 0; i < specialDays.length; i++) {
+            day = specialDays[i];
+            if (new Date(day.date) > todayDate) {
+                schoolDaysDiff -= 1;
+            }
+        }
+        return schoolDaysDiff;
+    }
+
+    function getTodayType(todayDate, startDate, endDate, specialDays) {
+        for (let i = 0; i < specialDays.length; i++) {
+            day = specialDays[i];
+            if (new Date(day.date) == todayDate) {
+                return day.name;
+            }
+        }
+        if (todayDate < startDate || todayDate > endDate) {
+            return "Summer Break";
+        }   
+        if (todayDate.getDay() == 0 || todayDate.getDay() == 6) {
+            return "Weekend";
+        }
+        return "School Day";
+    }
+
+
+    // const todayDate = new Date();
+    // const startDate = new Date("2024-07-27");
+    // const endDate = new Date("2025-04-23");
+    // var specialDays = specialDays();
+    // var daysLeft = getDaysLeft(todayDate, startDate, endDate, specialDays);
+    // console.log(daysLeft);
+    // var todayType = getTodayType(todayDate, startDate, endDate, specialDays);
+    // console.log(todayType);
+
+</script>
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>What</title>
+  </head>
+  <body>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            text-align: center;
+        }
+    </style>
+    <h1 id="datetime"></h1>
+
+    <h1 id="type"></h1>
+    <h1 id="left"></h1>
+
+    <script>
+      function updateDateTime() {
+        const now = new Date();
+        const currentDateTime = now.toLocaleString();
+        document.querySelector('#datetime').textContent = currentDateTime;
+        
+      }
+      function updateDaysLeft(specialDays) {
+        const startDate = new Date("2024-07-27");
+        const endDate = new Date("2025-04-23");
+        const now = new Date();
+        var daysLeft = getDaysLeft(now, startDate, endDate, specialDays);
+        var todayType = getTodayType(now, startDate, endDate, specialDays);
+        document.querySelector('#left').textContent = daysLeft + ' days';
+        document.querySelector('#type').textContent = todayType;
+      }
+      
+      var specialDays = specialDays();
+      setInterval(updateDateTime, 1000);
+      setInterval(updateDaysLeft, 1000, specialDays);
+    </script>
+  </body>
+</html>
