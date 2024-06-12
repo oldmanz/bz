@@ -114,9 +114,30 @@
         const startDate = new Date("2024-07-27");
         const endDate = new Date("2025-04-23");
         const now = new Date();
-        var daysLeft = getDaysLeft(now, startDate, endDate, specialDays);
-        var todayType = getTodayType(now, startDate, endDate, specialDays);
-        var json = JSON.stringify({daysLeft: daysLeft, todayType: todayType});
+        var d = {}
+        var date = now
+        while (date <= endDate){
+            var year = date.getFullYear();
+            var month = date.getMonth() + 1;
+            var day = date.getDate();
+            if (!d[year]) {
+                d[year] = {};
+            }
+            if (!d[year][month]) {
+                d[year][month] = {};
+            }
+            d[year][month][day] = {};
+            d[year][month][day]['days'] = getDaysLeft(date, startDate, endDate, specialDays);
+            d[year][month][day]['type'] = getTodayType(date, startDate, endDate, specialDays);
+            date.setDate(date.getDate() + 1);
+        }
+
+        
+
+        // var t = now.setDate(now.getDate () + 1);
+        // var daysLeft = getDaysLeft(now, startDate, endDate, specialDays);
+        // var todayType = getTodayType(now, startDate, endDate, specialDays);
+        var json = JSON.stringify(d);
         document.querySelector('#json').textContent = json;
       }
       
