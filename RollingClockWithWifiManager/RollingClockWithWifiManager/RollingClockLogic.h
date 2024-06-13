@@ -8,8 +8,13 @@ int clockFont = 1;
 int clockSize = 4;
 int clockDatum = TL_DATUM;
 uint16_t clockBackgroundColor = TFT_BLACK;
-uint16_t clockFontColor = TFT_OLIVE;
+//uint16_t clockFontColor = TFT_LIGHTGREY;
+uint16_t clockFontColor = TFT_DARKGREY;
 int prevDay = 0;
+int prevHour = 0;
+String text1 = "";
+String text2 = "";
+String text3 = "";
 
 bool SHOW_24HOUR = false;
 bool SHOW_AMPM = true;
@@ -208,10 +213,13 @@ void DrawDate()
     int dd = day(local);
     int mth = month(local);
     int yr = year(local);
+    int hr = hour(local);
+    int mn = minute(local);
+    int sc = second(local);
 
-    if (dd != prevDay)
+    if (hr != prevHour)
     {
-        prevDay = dd;
+        prevHour = hr;
         tft.setTextDatum(BC_DATUM);
         char buffer[50];
         if (NOT_US_DATE)
@@ -236,35 +244,56 @@ void DrawDate()
         tft.fillRect(0, 170 - h, 320, h, TFT_BLACK);
         tft.drawString(dayNames[dow] + ", " + buffer, 320 / 2, 80);
 
-        // HTTPClient http;
+        HTTPClient http;
+        http.useHTTP10(true);
+        String date = String(yr) + "-" + String(mth) + "-" + String(dd) + "T" + String(hr) + ":" + String(mn) + ":" + String(sc);
+        String serverPath = "http://192.168.1.6:5000";
+        http.begin(serverPath + "/text1/?date=" + date);
+        int httpResponseCode = http.GET();
+        if (httpResponseCode>0) {
+            Serial.print("HTTP Response code: ");
+            Serial.println(httpResponseCode);          
+            text1 = http.getString();
+        }
+        else {
+            Serial.print("Error code: ");
+            Serial.println(httpResponseCode);
+        }
 
-        // String serverPath = "https://oldmanz.github.io/bz/json";
-      
-        // http.begin(serverPath.c_str());
-    
-        // int httpResponseCode = http.GET();
-      
-        // if (httpResponseCode>0) {
-        //     Serial.print("HTTP Response code: ");
-        //     Serial.println(httpResponseCode);
-        //     String payload = http.getString();
-        //     Serial.println(payload);
-        //     tft.setTextSize(5);
-        //     tft.drawString(payload, 320 / 2, 190);
-        // }
-        // else {
-        //     Serial.print("Error code: ");
-        //     Serial.println(httpResponseCode);
-        // }
-        // // Free resources
-        // http.end();
+        http.end();
+        http.begin(serverPath + "/text2/?date=" + date);
+        httpResponseCode = http.GET();
+        if (httpResponseCode>0) {
+            Serial.print("HTTP Response code: ");
+            Serial.println(httpResponseCode);          
+            text2 = http.getString();
+        }
+        else {
+            Serial.print("Error code: ");
+            Serial.println(httpResponseCode);
+        }
+        http.end();
+
+        http.begin(serverPath + "/text3/?date=" + date);
+        httpResponseCode = http.GET();
+        if (httpResponseCode>0) {
+            Serial.print("HTTP Response code: ");
+            Serial.println(httpResponseCode);          
+            text3 = http.getString();
+        }
+        else {
+            Serial.print("Error code: ");
+            Serial.println(httpResponseCode);
+        }
+        http.end();
+
 
         tft.setTextSize(5);
-        tft.drawString("Text 1", 320 / 2, 150);
+        tft.drawString(text1, 320 / 2, 150);
         tft.setTextSize(3);
-        tft.drawString("Text 2", 320 / 2, 190);
+        tft.drawString(text2, 320 / 2, 190);
         tft.setTextSize(2);
-        tft.drawString("Text 3", 320 / 2, 230);
+        tft.drawString(text3, 320 / 2, 230);
 
 
     }
