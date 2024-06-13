@@ -247,7 +247,7 @@ void DrawDate()
         HTTPClient http;
         http.useHTTP10(true);
         String date = String(yr) + "-" + String(mth) + "-" + String(dd) + "T" + String(hr) + ":" + String(mn) + ":" + String(sc);
-        String serverPath = "http://192.168.1.6:5000";
+        String serverPath = "https://bz.oldmanz.com";
         http.begin(serverPath + "/text1/?date=" + date);
         int httpResponseCode = http.GET();
         if (httpResponseCode>0) {
@@ -289,9 +289,9 @@ void DrawDate()
 
 
         tft.setTextSize(5);
-        tft.drawString(text1, 320 / 2, 150);
+        tft.drawString(text1, 320 / 2, 170);
         tft.setTextSize(3);
-        tft.drawString(text2, 320 / 2, 190);
+        tft.drawString(text2, 320 / 2, 200);
         tft.setTextSize(2);
         tft.drawString(text3, 320 / 2, 230);
 

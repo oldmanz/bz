@@ -1,11 +1,10 @@
-from flask import Flask,jsonify,request 
-import json
+from flask import Flask,jsonify,request,render_template
 from datetime import datetime, timedelta
 
-data = json.load(open('data.json'))
-  
-app =   Flask(__name__) 
 
+app =   Flask(__name__) 
+school_start = datetime.strptime("2024-07-27", "%Y-%m-%d")
+school_end = datetime.strptime("2025-04-24", "%Y-%m-%d")
 special_days = {
     "2024-09-02": "Labor Day",
     "2024-11-25": "Thanksgiving Break",
@@ -81,31 +80,34 @@ def get_today_type(todayDate, startDate, endDate):
     return "School Day"
 
 
-@app.route('/', methods = ['GET']) 
-def ReturnRoot(): 
-    if(request.method == 'GET'): 
-        date = request.args.get('date')
-        print(date)
-        date = datetime.strptime(date, '%Y-%m-%dT%H:%M:%S')
-        school_start = datetime.strptime("2024-07-27", "%Y-%m-%d")
-        school_end = datetime.strptime("2025-04-24", "%Y-%m-%d")
-        days_left = get_days_left(school_start, school_end, date)
-        today_type = get_today_type(date, school_start, school_end)
+def get_text_1(date):
+    if date.hour >= 14:
         tom = date + timedelta(days=1)
-        return_data = {
-            "text1": "{} Days".format(days_left),
-            "text2": today_type,
-            "text3": ""
-        }
-        if date.hour >= 14:
-            tom_days_left = get_days_left(school_start, school_end, tom)
-            return_data['text1'] = "{} Days".format(tom_days_left)
+        days_left = get_days_left(school_start, school_end, tom)
+    else:
+        days_left = get_days_left(school_start, school_end, date)
 
-        if date.hour >= 17:
-            tom_type = get_today_type(tom, school_start, school_end)
-            return_data['text3'] = "Tomorrow: {}".format(tom_type)
+    return "{} Days".format(days_left)
 
-        return jsonify(return_data)
+def get_text_2(date):
+    today_type = get_today_type(date, school_start, school_end)
+    return today_type
+
+def get_text_3(date):
+    if date.hour >= 17:
+        tom = date + timedelta(days=1)
+        tom_type = get_today_type(tom, school_start, school_end)
+        return "Tomorrow: {}".format(tom_type)
+    else:
+        return ""
+
+@app.route('/', methods = ['GET'])
+def index():
+    date = datetime.now()
+    return render_template('index.html', 
+                            text1=get_text_1(date),
+                            text2=get_text_2(date),
+                            text3=get_text_3(date))
     
 
 @app.route('/text1/', methods = ['GET']) 
@@ -113,39 +115,22 @@ def ReturnText1():
     if(request.method == 'GET'): 
         date = request.args.get('date')
         date = datetime.strptime(date, '%Y-%m-%dT%H:%M:%S')
-        school_start = datetime.strptime("2024-07-27", "%Y-%m-%d")
-        school_end = datetime.strptime("2025-04-24", "%Y-%m-%d")
-        if date.hour >= 14:
-            tom = date + timedelta(days=1)
-            days_left = get_days_left(school_start, school_end, tom)
-        else:
-            days_left = get_days_left(school_start, school_end, date)
-
-        return "{} Days".format(days_left)
+        return get_text_1(date)
     
 @app.route('/text2/', methods = ['GET']) 
 def ReturnText2(): 
     if(request.method == 'GET'): 
         date = request.args.get('date')
         date = datetime.strptime(date, '%Y-%m-%dT%H:%M:%S')
-        school_start = datetime.strptime("2024-07-27", "%Y-%m-%d")
-        school_end = datetime.strptime("2025-04-24", "%Y-%m-%d")
-        today_type = get_today_type(date, school_start, school_end)
-        return today_type
+        return get_text_2(date)
+        
     
 @app.route('/text3/', methods = ['GET']) 
 def ReturnText3(): 
     if(request.method == 'GET'): 
         date = request.args.get('date')
         date = datetime.strptime(date, '%Y-%m-%dT%H:%M:%S')
-        school_start = datetime.strptime("2024-07-27", "%Y-%m-%d")
-        school_end = datetime.strptime("2025-04-24", "%Y-%m-%d")
-        if date.hour >= 17:
-            tom = date + timedelta(days=1)
-            tom_type = get_today_type(tom, school_start, school_end)
-            return "Tomorrow: {}".format(tom_type)
-        else:
-            return "TEST"
+        return get_text_3(date)
   
 if __name__=='__main__': 
     app.run(debug=True, host='0.0.0.0')

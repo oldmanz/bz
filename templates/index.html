@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" HTTP-EQUIV="refresh" CONTENT="3600">
+    <title>Barret's Countdown</title>
+  </head>
+  <body>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            text-align: center;
+            background-color: powderblue;
+            color: black;
+        }
+    </style>
+    <h1 id="datetime"></h1>
+
+    <h1 id="text1">{{text1}}</h1>
+    <h2 id="text2">{{text2}}</h1>
+    <h3 id="text3">{{text3}}</h1>
+
+    <script>    
+      function updateDateTime() {
+        const now = new Date();
+        const currentDateTime = now.toLocaleString();
+        document.querySelector('#datetime').textContent = currentDateTime;
+        
+      }      
+      setInterval(updateDateTime, 1000);
+    </script>
+  </body>
+</html>
