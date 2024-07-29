@@ -3,8 +3,8 @@ from datetime import datetime, timedelta
 
 
 app =   Flask(__name__) 
-school_start = datetime.strptime("2024-07-27", "%Y-%m-%d")
-school_end = datetime.strptime("2025-04-24", "%Y-%m-%d")
+school_start = datetime.strptime("2024-08-27", "%Y-%m-%d")
+school_end = datetime.strptime("2025-05-24", "%Y-%m-%d")
 special_days = {
     "2024-09-02": "Labor Day",
     "2024-11-25": "Thanksgiving Break",
